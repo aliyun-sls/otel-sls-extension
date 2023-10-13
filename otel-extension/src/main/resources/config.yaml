@@ -1,0 +1,107 @@
+enabled: true
+maxProfilingCount: 10
+profilingIntervalMillis: 5000
+agentConfigs:
+  # JFR文件上传服务器地址
+  # 示例：http://localhost:4040
+  # 如果不是http开头，会自动添加
+  # 如果没有以/结束，也会自动添加
+  # 默认值：http://localhost:4040
+  # agent.upload.server: "http://localhost:12800"
+  agent.upload.server: ""
+  # JFR文件上传时的网络超时（单位秒）
+  # 可选值：自然数
+  # 默认值：10
+  agent.timeout: 10
+  # JFR文件上传时的重试次数
+  # 可选值：自然数
+  # 默认值：2
+  agent.ingest.max.tries: 2
+  # 日志级别
+  # 默认值：info
+  # 可选值：info/debug/error
+  agent.log.level: debug
+  # 日志文件路径
+  # 默认值：输出到Java的标准输出
+  # 可选值：/path/to/profiling.log
+  agent.log.file: ""
+  # 上传周期（每隔多久上传一次剖析数据）
+  # 默认1分钟
+  period: 20
+  # 默认0，启动后马上开始剖析。非0则表示延迟对应秒数再开启剖析
+  # delay: 0
+  # 默认false
+  # 如果希望在每分钟的0秒开始剖析，则传入true
+  # 比如传入true，且当前时间是30秒，则会自动等待30后后再开启剖析
+  # start.at.zero.second: false
+  # 压缩
+  # 可选值：gzip/none，默认none
+  # none: 文件后缀是.jfr
+  # gzip: 文件后缀是.jfr.gzip
+  # compression.mode:
+  # 触发模式
+  # 自动周期性触发，或者单次触发
+  # 可选值: periodic/api
+  # 默认值 periodic
+  # agent模式适合periodic
+  # trigger.mode: periodic
+  # 文件格式
+  # 可选值：jfr/collapsed
+  # 默认值：jfr
+  # output.format: jfr
+  # CPU热点剖析引擎
+  # 可选值：auto/async_profiler/jfr/off
+  # off表示不打开CPU热点剖析，其它值表示打开
+  # 默认值：off
+  # 建议选择auto
+  cpu.engine: auto
+  # CPU热点剖析的间隔（单位毫秒）
+  # 可选值：自然数，值越小开销越大
+  # 默认值10
+  # cpu.interval: 10
+  # 墙钟热点剖析引擎
+  # 可选值：auto/async_profiler/off
+  # off表示不打开CPU热点剖析，其它值表示打开
+  # 默认值：off
+  # 建议选择off
+  wallclock.engine: auto
+  # 墙钟热点剖析的间隔（单位毫秒）
+  # 可选值：自然数，值越小开销越大
+  # 默认值20
+  wallclock.interval: 20
+  # Alloc（内存申请）热点剖析引擎
+  # 可选值：auto/async_profiler/jfr/off
+  # off表示不打开CPU热点剖析，其它值表示打开
+  # 默认值：off
+  # 建议选择auto
+  alloc.engine: auto
+  # 内存申请热点剖析的间隔（单位kilo bytes）
+  # 可选值：自然数，值越小开销越大
+  # 默认值256
+  # alloc.interval: 256
+  # JFR文件的体积上限，超过后会会自动丢弃数据
+  # 可选值：256k, 10m
+  # 默认值64m
+  # jfr.max.size: 64
+  # JFR文件的时间上限，超过后会会自动丢弃数据
+  # 可选值：1m, 1h, 1d
+  # 默认值10m
+  # jfr.max.age: 10
+  # JFR采样时的栈深度限制
+  # 可选值：自然数
+  # 默认值64
+  jfr.max.stack.depth: 64
+profilingRules:
+  # profiling root span
+  - name: "profiling root span"
+    type: ROOT_SPAN
+  # profiling span with some attribute
+  - name: "profiling span with some attribute"
+    type: SPAN_ATTRIBUTE
+    attributes:
+      test: "test"
+  # profiling span with some resouce attribute
+  - name: "profiling all spans with some resouce attribute"
+    type: AGENT_RESOURCE
+    attributes:
+      service.name: "payment"

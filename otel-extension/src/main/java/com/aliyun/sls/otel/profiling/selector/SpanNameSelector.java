@@ -1,12 +1,11 @@
 package com.aliyun.sls.otel.profiling.selector;
 
-import io.opentelemetry.sdk.trace.ReadWriteSpan;
-
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-public class SpanNameSelector extends ProfilingIntervalLimitSelector {
+import io.opentelemetry.sdk.trace.ReadWriteSpan;
 
+public class SpanNameSelector extends ProfilingIntervalLimitSelector {
 
     private final String spanNamePattern;
     private final Pattern pattern;

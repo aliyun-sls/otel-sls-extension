@@ -1,14 +1,5 @@
 package com.aliyun.sls.otel.profiling.service;
 
-import com.aliyun.sls.otel.profiling.config.*;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import io.opentelemetry.sdk.autoconfigure.spi.ConfigProperties;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +11,18 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+
+import com.aliyun.sls.otel.profiling.config.ConfigChangedListener;
+import com.aliyun.sls.otel.profiling.config.NoopProfilingConfigs;
+import com.aliyun.sls.otel.profiling.config.ProfilingConfig;
+import com.aliyun.sls.otel.profiling.config.ProfilingConfigs;
+import com.aliyun.sls.otel.profiling.config.ProfilingRule;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+
+import io.opentelemetry.sdk.autoconfigure.spi.ConfigProperties;
 
 public enum ConfigService implements ProfilingConfig {
 
@@ -108,7 +111,6 @@ public enum ConfigService implements ProfilingConfig {
 
         return NoopProfilingConfigs.INSTANCE;
     }
-
 
     private Map<String, String> initResourceAttribute(ConfigProperties configProperties) {
         Map<String, String> resourceAttributes = configProperties.getMap("otel.resource.attributes", new HashMap<>());

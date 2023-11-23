@@ -96,6 +96,7 @@
     </dependencyManagement>
 
     <build>
+        <finalName>otel-sls-extension</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

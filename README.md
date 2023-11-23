@@ -43,13 +43,13 @@ ID将Profiling数据与Trace数据相关联，帮助开发者找到应用中的�
 1. 创建全栈可观测实例。[参见文档](https://help.aliyun.com/zh/sls/user-guide/create-an-instance-1.html)
 2.
 
-配置Profiling数据采集配置。[参见文档](https://help.aliyun.com/zh/sls/user-guide/access-the-java-program-performance-data-reported
--by-the-pyroscope-sdk-or-javaagent)
+配置Profiling数据采集配置。[参见文档](https://help.aliyun.com/zh/sls/user-guide/access-the-java-program-performance-data-reported-by-the-pyroscope-sdk-or-javaagent)
 
 ### 启动应用程序
 
-1. 通过[release page](https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases)下载OpenTelemetry Java Agent包;
-2. 通过[release page]()下载otel-sls-extension包;
+1. 下载OpenTelemetry Java
+   Agent包，[下载地址](https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases)
+2. 下载otel-sls-extension包，[下载地址](https://github.com/aliyun-sls/otel-profiling-extension/releases)
 3. 启动应用程序
 
 ```shell
@@ -59,6 +59,12 @@ java -javaagent:/path/to/opentelemetry-javaagent-all.jar \
      -Dotel.service.name=trace-profiling-demo \
      -jar myapp.jar
 ```
+
+4. 查看结果
+
+   在日志服务控制台，选择对应的日志库，点击查询分析，输入以下查询语句，即可查看到Profiling数据。
+
+![img.png](images/profiling-data.png)
 
 ## 配置
 

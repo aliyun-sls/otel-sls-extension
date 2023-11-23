@@ -12,7 +12,7 @@ Instrumentation的功能。目前支持的能力有：
 OpenTelemetry为我们提供了一个强大的跟踪框架，能够捕捉到在分布式系统中服务之间传递的请求跟踪数据。这些数据对于理解请求流程和服务间的依赖关系至关重要，但当涉及到深入分析单个微服务的内部性能时，它们可能就不够用了。
 比如，当我们的服务响应速度变慢或者出现超时，仅凭Trace数据可能无法完全揭示问题的本质。这时，我们需要更细致的性能分析数据，即Profiling数据，来帮助我们定位问题根因。
 
-以下是几种常见的性能问题，以及Profiling数据对其诊断的价值：
+以下是几种常见的性能问题:
 
 1. **内存申请过多，导致频繁GC**
 
@@ -41,9 +41,7 @@ ID将Profiling数据与Trace数据相关联，帮助开发者找到应用中的�
 ### 预备工作
 
 1. 创建全栈可观测实例。[参见文档](https://help.aliyun.com/zh/sls/user-guide/create-an-instance-1.html)
-2.
-
-配置Profiling数据采集配置。[参见文档](https://help.aliyun.com/zh/sls/user-guide/access-the-java-program-performance-data-reported-by-the-pyroscope-sdk-or-javaagent)
+2. 配置Profiling数据采集配置。[参见文档](https://help.aliyun.com/zh/sls/user-guide/access-the-java-program-performance-data-reported-by-the-pyroscope-sdk-or-javaagent)
 
 ### 启动应用程序
 

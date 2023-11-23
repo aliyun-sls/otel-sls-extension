@@ -45,8 +45,7 @@ ID将Profiling数据与Trace数据相关联，帮助开发者找到应用中的�
 
 ### 启动应用程序
 
-1. 下载OpenTelemetry Java
-   Agent包，[下载地址](https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases)
+1. 下载OpenTelemetry Java Agent包，[下载地址](https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases)
 2. 下载otel-sls-extension包，[下载地址](https://github.com/aliyun-sls/otel-profiling-extension/releases)
 3. 启动应用程序
 

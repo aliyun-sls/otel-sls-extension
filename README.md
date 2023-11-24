@@ -19,18 +19,14 @@ OpenTelemetry为我们提供了一个强大的跟踪框架，能够捕捉到在�
    假设一个场景，我们的应用程序使用JDBC进行数据库操作，而在执行数据查询时，没有对返回的数据量进行限制。
    如图所示，一旦表数据量过大，将会造成大量的内存申请导致了频繁的GC，从而导致了应用程序的性能下降
 
-<p align="center">
-  <img src="./images/allocate-memory.jpg" width="100%" height="30%">
-</p>
+![allocate-memory](./images/allocate-memory.jpg)
 
 2. **Trace埋点稀疏，CPU执行过长，导致无法定位问题根因**
 
    Trace数据出于Agent对应用性能的考虑，不会针对每一行代码进行埋点的，这种选择性跟踪策略可能导致一些没有埋点的耗时代码区域在性能分析中形成盲点，使得定位问题变得更加困难。
    例如，如果一个关键业务逻辑没有被跟踪，它的性能问题可能就无法通过Trace数据被发现。而Profiling数据则可以帮助我们找到这些盲点，从而更好地理解应用程序的性能瓶颈。
 
-<p align="center">
-  <img src="./images/tracing-hot-method.jpg" width="100%" height="30%">
-</p>
+![tracing-hot-method](./images/tracing-hot-method.jpg)
 
 ## 工作原理
 
@@ -38,18 +34,14 @@ otel-sls-extension的工作流程简述如下：首先，根据Profiling配置�
 Flight Recorder (JFR)的Profiling任务，收集方法执行时间、内存消耗、CPU使用等运行时信息。采集到的Profiling数据通过ilogtail发送到日志服务，在那里可以通过Trace
 ID将Profiling数据与Trace数据相关联，帮助开发者找到应用中的性能热点。
 
-<p align="center">
-  <img src="./images/data-flow.jpg" width="100%" height="30%">
-</p>
+![data-flow](./images/data-flow.jpg)
 
 ## 快速入门
 
 ### 预备工作
 
 1. 创建全栈可观测实例。[参见文档](https://help.aliyun.com/zh/sls/user-guide/create-an-instance-1.html)
-2.
-
-配置Profiling数据采集配置。[参见文档](https://help.aliyun.com/zh/sls/user-guide/access-the-java-program-performance-data-reported-by-the-pyroscope-sdk-or-javaagent)
+2. 配置Profiling数据采集配置。[参见文档](https://help.aliyun.com/zh/sls/user-guide/access-the-java-program-performance-data-reported-by-the-pyroscope-sdk-or-javaagent)
 
 ### 启动应用程序
 

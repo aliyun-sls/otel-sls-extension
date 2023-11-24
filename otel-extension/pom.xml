@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.alibaba.sls</groupId>
         <artifactId>otel-profiling-extension</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
 
     <artifactId>otel-extension</artifactId>

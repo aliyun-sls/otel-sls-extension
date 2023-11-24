@@ -19,14 +19,18 @@ OpenTelemetry为我们提供了一个强大的跟踪框架，能够捕捉到在�
    假设一个场景，我们的应用程序使用JDBC进行数据库操作，而在执行数据查询时，没有对返回的数据量进行限制。
    如图所示，一旦表数据量过大，将会造成大量的内存申请导致了频繁的GC，从而导致了应用程序的性能下降
 
-![allocate-memory.png](images%2Fallocate-memory.png)
+<p align="center">
+  <img src="./images/allocate-memory.jpg" width="100%" height="30%">
+</p>
 
 2. **Trace埋点稀疏，CPU执行过长，导致无法定位问题根因**
 
    Trace数据出于Agent对应用性能的考虑，不会针对每一行代码进行埋点的，这种选择性跟踪策略可能导致一些没有埋点的耗时代码区域在性能分析中形成盲点，使得定位问题变得更加困难。
    例如，如果一个关键业务逻辑没有被跟踪，它的性能问题可能就无法通过Trace数据被发现。而Profiling数据则可以帮助我们找到这些盲点，从而更好地理解应用程序的性能瓶颈。
 
-![trace-hot-method.png](images%2Ftrace-hot-method.png)
+<p align="center">
+  <img src="./images/tracing-hot-method.jpg" width="100%" height="30%">
+</p>
 
 ## 工作原理
 
@@ -34,25 +38,30 @@ otel-sls-extension的工作流程简述如下：首先，根据Profiling配置�
 Flight Recorder (JFR)的Profiling任务，收集方法执行时间、内存消耗、CPU使用等运行时信息。采集到的Profiling数据通过ilogtail发送到日志服务，在那里可以通过Trace
 ID将Profiling数据与Trace数据相关联，帮助开发者找到应用中的性能热点。
 
-![img.png](images/data-flow.png)
+<p align="center">
+  <img src="./images/data-flow.jpg" width="100%" height="30%">
+</p>
 
 ## 快速入门
 
 ### 预备工作
 
 1. 创建全栈可观测实例。[参见文档](https://help.aliyun.com/zh/sls/user-guide/create-an-instance-1.html)
-2. 配置Profiling数据采集配置。[参见文档](https://help.aliyun.com/zh/sls/user-guide/access-the-java-program-performance-data-reported-by-the-pyroscope-sdk-or-javaagent)
+2.
+
+配置Profiling数据采集配置。[参见文档](https://help.aliyun.com/zh/sls/user-guide/access-the-java-program-performance-data-reported-by-the-pyroscope-sdk-or-javaagent)
 
 ### 启动应用程序
 
-1. 下载OpenTelemetry Java Agent包，[下载地址](https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases)
+1. 下载OpenTelemetry Java
+   Agent包，[下载地址](https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases)
 2. 下载otel-sls-extension包，[下载地址](https://github.com/aliyun-sls/otel-profiling-extension/releases)
 3. 启动应用程序
 
 ```shell
 java -javaagent:/path/to/opentelemetry-javaagent-all.jar \
      -Dotel.javaagent.extensions=/path/to/otel-extension.jar \
-     -Dotel.profiling.config_endpoint=file:/path/to/profiling_config.yaml \ # 配置Profiling数据采集配置
+     -Dotel.profiling.config_endpoint=file:/path/to/profiling_config.yaml \
      -Dotel.service.name=trace-profiling-demo \
      -jar myapp.jar
 ```
@@ -67,32 +76,99 @@ java -javaagent:/path/to/opentelemetry-javaagent-all.jar \
 
 以下是otel-sls-extension的配置项说明：
 
+| 配置项                       | 说明                                                         | 是否必填 | 默认值                   |
+|---------------------------|------------------------------------------------------------|------|-----------------------|
+| enabled                   | 是否开启Profiling                                              | 是    | false                 |
+| maxProfilingCount         | 最大Profiling并行任务数                                           | 否    | 10                    |
+| profilingIntervalMillis   | Profiling任务任务间隔                                            | 否    | 5000                  |
+| agentConfigs              | Profiling Agent配置                                          | 否    |                       |
+| agent.upload.server       | Profiling数据上报地址                                            | 否    | http://localhost:4040 |
+| agent.timeout             | Profiling数据上报超时时间 ，单位：s(秒)                                 | 否    | 10                    |
+| agent.ingest.max.tries    | Profiling数据上传重试次数                                          | 否    | 2                     |
+| agent.log.level           | Profiling Agent日志级别                                        | 否    | off                   |
+| agent.log.file            | Profiling Agent日志文件路径                                      | 否    |                       |
+| period                    | Profiling数据上传周期，单位: s(秒)                                   | 否    | 20                    |
+| cpu.engine                | CPU采集引擎，目前支持auto/async_profiler/jfr/off                    | 否    | off                   |
+| wallclock.engine          | WallClock采集引擎，目前支持auto/async_profiler/off                  | 否    | off                   |
+| alloc.engine              | Alloc采集引擎，目前支持auto/async_profiler/jfr/off                  | 否    | off                   |
+| profilingRules            | Profiling规则配置                                              | 否    |                       |
+| profilingRules.name       | Profiling规则名称                                              | 是    |                       |
+| profilingRules.type       | Profiling规则类型，目前支持ROOT_SPAN, AGENT_RESOURCE, SPAN_NAME三种类型 | 是    |                       |
+| profilingRules.attributes | Profiling规则属性，根据不同的规则类型，属性值也不同                             | 否    |                       |
+
+### 配置示例
+
+#### 配置所有Root Span进行Profiling
+
 ```yaml
-enabled: true  # 是否开启Profiling，必填，默认值为false
-maxProfilingCount: 10 # 最大Profiling任务数，默认值为10
-profilingIntervalMillis: 5000 # Profiling任务间隔，默认值为5000
-agentConfigs: # profiling agent配置
-  agent.upload.server: "http://localhost:4040" # ilogtail地址，必填，默认值为http://localhost:4040
-  agent.timeout: 10  # ilogtail超时时间，必填，默认值为10
+enabled: true
+maxProfilingCount: 10
+profilingIntervalMillis: 5000
+agentConfigs:
+  agent.upload.server: "http://localhost:4040"
+  agent.timeout: 10
   agent.ingest.max.tries: 2
   agent.log.level: off
-  agent.log.file: "" # profiling agent日志文件路径，默认值为空,表示控制台输出
-  period: 20 # profiling数据上传周期，单位:s 默认值为20
-  delay: 0 # profiling数据上传延迟，默认值为0
-  cpu.engine: async_profiler # cpu采集引擎，默认值为async_profiler
-  wallclock.engine: async_profiler # wallclock采集引擎，默认值为async_profiler
-  alloc.engine: async_profiler # alloc采集引擎，默认值为async_profiler
-profilingRules: # profiling规则配置, 目前支持ROOT_SPAN, AGENT_RESOURCE, SPAN_NAME三种类型，
+  agent.log.file: ""
+  period: 20
+  cpu.engine: async_profiler
+  wallclock.engine: async_profiler
+  alloc.engine: async_profiler
+profilingRules:
   - name: "profiling root span"
-    type: ROOT_SPAN # ROOT_SPAN表示Profiling任务将会对根Span进行采集
+    type: ROOT_SPAN
+```
+
+#### 配置所有service.name为payment的Root Span进行Profiling
+
+```yaml
+enabled: true
+maxProfilingCount: 10
+profilingIntervalMillis: 5000
+agentConfigs:
+  agent.upload.server: "http://localhost:4040"
+  agent.timeout: 10
+  agent.ingest.max.tries: 2
+  agent.log.level: off
+  agent.log.file: ""
+  period: 20
+  cpu.engine: async_profiler
+  wallclock.engine: async_profiler
+  alloc.engine: async_profiler
+profilingRules:
+  - name: "profiling root span"
+    type: ROOT_SPAN
   - name: "profiling all spans with some resouce attribute"
-    type: AGENT_RESOURCE # AGENT_RESOURCE表示Profiling任务将会对所有包含指定资源属性的Span进行采集
+    type: AGENT_RESOURCE
     attributes:
       service.name: "payment" #例如，这里指定了service.name为payment的Span将会被采集
-  - name: "profiling with span name"
-    type: SPAN_NAME # SPAN_NAME表示Profiling任务将会对所有指定Span Name的Span进行采集
-    attributes:
-      pattern: ".*" # 例如，这里指定了所有Span Name都会被采集
+```
+
+#### 配置所有Span service.name为payment，并且Span Name以`Get`开头的Span进行Profiling
+
+```yaml
+enabled: true
+maxProfilingCount: 10
+profilingIntervalMillis: 5000
+agentConfigs:
+   agent.upload.server: "http://localhost:4040"
+   agent.timeout: 10
+   agent.ingest.max.tries: 2
+   agent.log.level: off
+   agent.log.file: ""
+   period: 20
+   cpu.engine: async_profiler
+   wallclock.engine: async_profiler
+   alloc.engine: async_profiler
+profilingRules:
+   - name: "profiling all spans with some resouce attribute"
+     type: AGENT_RESOURCE
+     attributes:
+        service.name: "payment" #例如，这里指定了service.name为payment的Span将会被采集
+   - name: "profiling with span name"
+     type: SPAN_NAME
+     attributes:
+        pattern: "Get*" # 支持正则表达式
 ```
 
 ## RoadMap

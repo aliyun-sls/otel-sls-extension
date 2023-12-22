@@ -11,7 +11,6 @@ import java.util.concurrent.TimeUnit;
 public enum ScheduleTaskService {
     INSTANCE;
 
-
     /**
      * executor for clean timeout profiling trace
      */
@@ -25,7 +24,6 @@ public enum ScheduleTaskService {
             return thread;
         });
     }
-
 
     public ScheduledFuture<?> submitJob(Runnable runnable, long delay, long period, TimeUnit timeUnit) {
         return this.executors.scheduleAtFixedRate(runnable, delay, period, timeUnit);

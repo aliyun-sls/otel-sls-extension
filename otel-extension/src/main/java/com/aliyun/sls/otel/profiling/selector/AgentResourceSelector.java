@@ -16,8 +16,10 @@ public class AgentResourceSelector extends AbstractProfilingSelector {
 
     public AgentResourceSelector(Map<String, String> resource, ProfilingConfig profilingConfig) {
         for (Entry<String, String> entrySet : resource.entrySet()) {
-            LOGGER.info("AgentResourceSelector: " + entrySet.getKey() + " : " + entrySet.getValue() + " : " + profilingConfig.getResourceConfig(entrySet.getKey()));
-            enabled = enabled && entrySet.getValue().equalsIgnoreCase(profilingConfig.getResourceConfig(entrySet.getKey()));
+            LOGGER.info("AgentResourceSelector: " + entrySet.getKey() + " : " + entrySet.getValue() + " : "
+                    + profilingConfig.getResourceConfig(entrySet.getKey()));
+            enabled = enabled
+                    && entrySet.getValue().equalsIgnoreCase(profilingConfig.getResourceConfig(entrySet.getKey()));
         }
     }
 

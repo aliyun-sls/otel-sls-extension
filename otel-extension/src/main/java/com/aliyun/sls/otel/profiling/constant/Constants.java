@@ -5,4 +5,6 @@ public class Constants {
     public static final String LABEL_PROFILE_ID = "profile_id";
     public static final String LABEL_TRACE_ID = "traceID";
     public static final String LABEL_SPAN_ID = "spanID";
+    public static final String LABEL_HOSTNAME = "hostname";
+    public static final String LABEL_IP = "ip";
 }

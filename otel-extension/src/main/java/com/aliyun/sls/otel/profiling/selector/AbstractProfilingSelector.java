@@ -14,8 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 /**
- * AbstractProfilingSelector is the abstract class for profiling selector, it
- * provides the profiling selector.
+ * AbstractProfilingSelector is the abstract class for profiling selector, it provides the profiling selector.
  */
 public abstract class AbstractProfilingSelector implements ProfilingSelector {
     protected static final Logger LOGGER = Logger.getLogger(ProfilingService.class.getName());
@@ -23,10 +22,11 @@ public abstract class AbstractProfilingSelector implements ProfilingSelector {
     protected final ProfilingAction profilingAction;
     protected final List<ProfilingSelector> profilingSelectors = new ArrayList<>();
 
-
     protected AbstractProfilingSelector(ProfilingAction profilingAction) {
         this.profilingAction = profilingAction;
-        ScheduleTaskService.INSTANCE.submitJob(() -> profilingAction.cleanTimeoutProfilingTrace(TimeUnit.MINUTES.toMillis(2)), 2, 2, java.util.concurrent.TimeUnit.MINUTES);
+        ScheduleTaskService.INSTANCE.submitJob(
+                () -> profilingAction.cleanTimeoutProfilingTrace(TimeUnit.MINUTES.toMillis(2)), 2, 2,
+                java.util.concurrent.TimeUnit.MINUTES);
     }
 
     public AbstractProfilingSelector() {
@@ -37,6 +37,7 @@ public abstract class AbstractProfilingSelector implements ProfilingSelector {
      * check if already profiling
      *
      * @param traceId
+     *
      * @return
      */
     protected boolean checkIfAlreadyProfiling(String traceId) {
@@ -103,6 +104,7 @@ public abstract class AbstractProfilingSelector implements ProfilingSelector {
      * check if need profiling
      *
      * @param readWriteSpan
+     *
      * @return
      */
     protected abstract boolean checkIfNeedProfiling(ReadWriteSpan readWriteSpan);

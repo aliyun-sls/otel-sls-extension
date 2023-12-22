@@ -8,8 +8,7 @@ import io.opentelemetry.sdk.autoconfigure.spi.AutoConfigurationCustomizer;
 import io.opentelemetry.sdk.autoconfigure.spi.AutoConfigurationCustomizerProvider;
 
 /**
- * This class is used to customize the
- * {@link io.opentelemetry.sdk.autoconfigure.spi.SdkTracerProviderConfigurer} by
+ * This class is used to customize the {@link io.opentelemetry.sdk.autoconfigure.spi.SdkTracerProviderConfigurer} by
  * adding a {@link E2EProfilingSpanProcessor} to it.
  */
 @AutoService(AutoConfigurationCustomizerProvider.class)

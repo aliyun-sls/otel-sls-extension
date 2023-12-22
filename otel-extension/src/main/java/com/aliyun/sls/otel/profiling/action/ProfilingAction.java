@@ -40,15 +40,16 @@ public interface ProfilingAction {
 
     /**
      * check if the traceId is already profiling.
-     * 
+     *
      * @param traceId
+     *
      * @return
      */
     boolean checkIfAlreadyProfiling(String traceId);
 
     /**
      * clean timeout profiling trace.
-     * 
+     *
      * @param timeout
      */
     void cleanTimeoutProfilingTrace(long timeout);

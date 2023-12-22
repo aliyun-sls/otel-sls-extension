@@ -16,7 +16,6 @@ public class ProfilingCountLimitSelector extends AbstractProfilingSelector {
         this.maxLimit = maxLimit;
     }
 
-
     @Override
     public boolean shouldBeProfiling(ReadWriteSpan span) {
         // Check if need to profiling another thread of the same trace.
@@ -25,7 +24,6 @@ public class ProfilingCountLimitSelector extends AbstractProfilingSelector {
             profilingAction.startProfiling(span);
             return true;
         }
-
 
         boolean shouldBeProfiling = profilingSelectors.isEmpty() ? true : false;
         for (ProfilingSelector profilingSelector : profilingSelectors) {

@@ -1,10 +1,14 @@
 package com.aliyun.sls.otel.profiling.action;
 
-import static com.aliyun.sls.otel.profiling.constant.Constants.LABEL_PROFILE_ID;
-import static com.aliyun.sls.otel.profiling.constant.Constants.LABEL_SPAN_ID;
-import static com.aliyun.sls.otel.profiling.constant.Constants.LABEL_TRACE_ID;
-import static com.aliyun.sls.otel.profiling.selector.ProfilingKey.newKey;
+import com.alibaba.cpc.asyncprofiler.labels.LabelsSet;
+import com.alibaba.cpc.asyncprofiler.labels.ScopedContext;
+import com.alibaba.cpc.tracing.TracingProfiling;
+import com.aliyun.sls.otel.profiling.selector.ProfilingKey;
+import io.opentelemetry.sdk.trace.ReadWriteSpan;
+import io.opentelemetry.sdk.trace.ReadableSpan;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -13,13 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.logging.Logger;
 
-import com.alibaba.cpc.asyncprofiler.labels.LabelsSet;
-import com.alibaba.cpc.asyncprofiler.labels.ScopedContext;
-import com.alibaba.cpc.tracing.TracingProfiling;
-import com.aliyun.sls.otel.profiling.selector.ProfilingKey;
-
-import io.opentelemetry.sdk.trace.ReadWriteSpan;
-import io.opentelemetry.sdk.trace.ReadableSpan;
+import static com.aliyun.sls.otel.profiling.constant.Constants.*;
+import static com.aliyun.sls.otel.profiling.selector.ProfilingKey.newKey;
 
 /**
  * AlibabaProfilingAction is the implementation of ProfilingAction, it provides the profiling action.
@@ -31,6 +30,18 @@ public enum AlibabaProfilingAction implements ProfilingAction {
     protected static final Logger LOGGER = Logger.getLogger(AlibabaProfilingAction.class.getName());
     // <TraceID, <ThreadID, ScopeContext>>
     protected final Map<ProfilingKey, Map<Long, ScopedContext>> profilingTraces = new ConcurrentSkipListMap<>();
+    private String ip;
+
+    private String hostname;
+
+    AlibabaProfilingAction() {
+        try {
+            InetAddress inetAddress = InetAddress.getLocalHost();
+            hostname = inetAddress.getHostName();
+        } catch (UnknownHostException e) {
+            hostname = "";
+        }
+    }
 
     @Override
     public final void stopProfiling(ReadableSpan readableSpan) {
@@ -38,7 +49,8 @@ public enum AlibabaProfilingAction implements ProfilingAction {
     }
 
     private void stopProfiling(String traceID, Long threadID) {
-        ScopedContext scopedContext = profilingTraces.getOrDefault(newKey(traceID), Collections.emptyMap()).remove(Thread.currentThread().getId());
+        ScopedContext scopedContext = profilingTraces.getOrDefault(newKey(traceID), Collections.emptyMap())
+                .remove(Thread.currentThread().getId());
 
         if (scopedContext != null) {
             LOGGER.info("stop profiling for traceId: " + traceID + " threadID: " + Thread.currentThread().getId());
@@ -52,11 +64,13 @@ public enum AlibabaProfilingAction implements ProfilingAction {
     public final void startProfiling(ReadWriteSpan readWriteSpan) {
         Long threadId = Thread.currentThread().getId();
 
-        LOGGER.info("start profiling for traceId: " + readWriteSpan.getSpanContext().getTraceId() + " threadID: " + threadId);
+        LOGGER.info("start profiling for traceId: " + readWriteSpan.getSpanContext().getTraceId() + " threadID: "
+                + threadId);
 
         ScopedContext scopedContext = new ScopedContext(new LabelsSet(initLables(readWriteSpan)));
         TracingProfiling.instance().addCurrentThread();
-        profilingTraces.computeIfAbsent(newKey(readWriteSpan.getSpanContext().getTraceId()), profilingKey -> new ConcurrentHashMap<>(5, 1)).put(threadId, scopedContext);
+        profilingTraces.computeIfAbsent(newKey(readWriteSpan.getSpanContext().getTraceId()),
+                profilingKey -> new ConcurrentHashMap<>(5, 1)).put(threadId, scopedContext);
 
     }
 
@@ -79,6 +93,7 @@ public enum AlibabaProfilingAction implements ProfilingAction {
         labels.put(LABEL_PROFILE_ID, span.getSpanContext().getSpanId());
         labels.put(LABEL_TRACE_ID, span.getSpanContext().getTraceId());
         labels.put(LABEL_SPAN_ID, span.getSpanContext().getSpanId());
+        labels.put(LABEL_HOSTNAME, INSTANCE.hostname);
 
         return labels;
     }
@@ -106,7 +121,8 @@ public enum AlibabaProfilingAction implements ProfilingAction {
     }
 
     private void cleanProfilingTrace(Map.Entry<ProfilingKey, Map<Long, ScopedContext>> entry) {
-        LOGGER.info("clean timeout profiling traceId: " + entry.getKey().getTraceID() + " startTime: " + entry.getKey().getProfilingStartTimeMillis());
+        LOGGER.info("clean timeout profiling traceId: " + entry.getKey().getTraceID() + " startTime: "
+                + entry.getKey().getProfilingStartTimeMillis());
 
         Iterator<Map.Entry<Long, ScopedContext>> iterator = entry.getValue().entrySet().iterator();
         while (iterator.hasNext()) {

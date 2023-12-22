@@ -9,8 +9,8 @@ import io.opentelemetry.sdk.trace.ReadableSpan;
 import io.opentelemetry.sdk.trace.SpanProcessor;
 
 /**
- * E2EProfilingSpanProcessor is the span processor for profiling. It will try to start profiling
- * when span start and stop profiling when span end.
+ * E2EProfilingSpanProcessor is the span processor for profiling. It will try to start profiling when span start and
+ * stop profiling when span end.
  */
 public class E2EProfilingSpanProcessor implements SpanProcessor {
 

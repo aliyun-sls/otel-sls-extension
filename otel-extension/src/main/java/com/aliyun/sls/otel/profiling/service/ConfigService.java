@@ -160,7 +160,7 @@ public enum ConfigService implements ProfilingConfig {
         for (Map.Entry<String, String> entry : profilingConfigs.getAgentConfigs().entrySet()) {
             agentConfig.put(String.format("profiling.%s", entry.getKey()), entry.getValue());
         }
-        agentConfig.put("agent.spy.name", "java");
+        agentConfig.put("profiling.agent.spy.name", "java");
         agentConfig.put("profiling.app.name", getServiceName());
         return agentConfig;
     }

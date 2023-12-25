@@ -2,6 +2,8 @@ package com.aliyun.sls.otel.profiling.selector;
 
 import io.opentelemetry.sdk.trace.ReadWriteSpan;
 
+import java.util.logging.Level;
+
 /**
  * RootSpanSelector is the selector for root span.
  */
@@ -13,7 +15,10 @@ public class RootSpanSelector extends ProfilingIntervalLimitSelector {
 
     @Override
     protected boolean checkProfilingRule(ReadWriteSpan span) {
-        LOGGER.info("RootSpanSelector: checkProfilingRule: " + span.getParentSpanContext().getSpanId());
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("RootSpanSelector: checkProfilingRule: " + span.getParentSpanContext().getSpanId());
+        }
+
         if ("0000000000000000".equals(span.getParentSpanContext().getSpanId())) {
             return true;
         }

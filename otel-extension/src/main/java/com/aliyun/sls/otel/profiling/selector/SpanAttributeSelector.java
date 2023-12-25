@@ -5,6 +5,7 @@ import io.opentelemetry.sdk.trace.ReadWriteSpan;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 /**
  * Span attribute selector.
@@ -29,7 +30,9 @@ public class SpanAttributeSelector extends ProfilingIntervalLimitSelector {
                 return false;
             }
         }
-        LOGGER.info("start profiling, matched rule: " + this.getClass().getName());
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("start profiling, matched rule: " + this.getClass().getName());
+        }
         return true;
     }
 

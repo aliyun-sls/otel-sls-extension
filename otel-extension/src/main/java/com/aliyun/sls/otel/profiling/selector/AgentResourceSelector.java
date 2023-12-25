@@ -2,6 +2,7 @@ package com.aliyun.sls.otel.profiling.selector;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 
 import com.aliyun.sls.otel.profiling.config.ProfilingConfig;
 
@@ -16,8 +17,10 @@ public class AgentResourceSelector extends AbstractProfilingSelector {
 
     public AgentResourceSelector(Map<String, String> resource, ProfilingConfig profilingConfig) {
         for (Entry<String, String> entrySet : resource.entrySet()) {
-            LOGGER.info("AgentResourceSelector: " + entrySet.getKey() + " : " + entrySet.getValue() + " : "
-                    + profilingConfig.getResourceConfig(entrySet.getKey()));
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("AgentResourceSelector: " + entrySet.getKey() + " : " + entrySet.getValue() + " : "
+                        + profilingConfig.getResourceConfig(entrySet.getKey()));
+            }
             enabled = enabled
                     && entrySet.getValue().equalsIgnoreCase(profilingConfig.getResourceConfig(entrySet.getKey()));
         }
@@ -25,7 +28,9 @@ public class AgentResourceSelector extends AbstractProfilingSelector {
 
     @Override
     protected boolean checkIfNeedProfiling(ReadWriteSpan readWriteSpan) {
-        LOGGER.info("AgentResourceSelector: checkIfNeedProfiling: " + enabled);
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("AgentResourceSelector: checkIfNeedProfiling: " + enabled);
+        }
         return enabled;
     }
 

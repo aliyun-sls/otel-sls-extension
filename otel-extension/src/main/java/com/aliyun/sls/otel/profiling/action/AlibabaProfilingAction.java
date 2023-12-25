@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static com.aliyun.sls.otel.profiling.constant.Constants.*;
@@ -39,7 +40,9 @@ public enum AlibabaProfilingAction implements ProfilingAction {
                 .remove(Thread.currentThread().getId());
 
         if (scopedContext != null) {
-            LOGGER.info("stop profiling for traceId: " + traceID + " threadID: " + Thread.currentThread().getId());
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("stop profiling for traceId: " + traceID + " threadID: " + Thread.currentThread().getId());
+            }
             scopedContext.close();
             TracingProfiling.instance().removeCurrentThread();
             removeProfilingTraceId(traceID);
@@ -50,8 +53,10 @@ public enum AlibabaProfilingAction implements ProfilingAction {
     public final void startProfiling(ReadWriteSpan readWriteSpan) {
         Long threadId = Thread.currentThread().getId();
 
-        LOGGER.info("start profiling for traceId: " + readWriteSpan.getSpanContext().getTraceId() + " threadID: "
-                + threadId);
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("start profiling for traceId: " + readWriteSpan.getSpanContext().getTraceId() + " threadID: "
+                    + threadId);
+        }
 
         ScopedContext scopedContext = new ScopedContext(new LabelsSet(initLables(readWriteSpan)));
         TracingProfiling.instance().addCurrentThread();
@@ -68,7 +73,9 @@ public enum AlibabaProfilingAction implements ProfilingAction {
     public final void removeProfilingTraceId(String traceID) {
         Map<Long, ScopedContext> contextMap = profilingTraces.get(newKey(traceID));
         if (contextMap.isEmpty()) {
-            LOGGER.info("remove profiling traceId: " + traceID);
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("remove profiling traceId: " + traceID);
+            }
             profilingTraces.remove(newKey(traceID));
         }
     }
@@ -106,8 +113,10 @@ public enum AlibabaProfilingAction implements ProfilingAction {
     }
 
     private void cleanProfilingTrace(Map.Entry<ProfilingKey, Map<Long, ScopedContext>> entry) {
-        LOGGER.info("clean timeout profiling traceId: " + entry.getKey().getTraceID() + " startTime: "
-                + entry.getKey().getProfilingStartTimeMillis());
+        if (LOGGER.isLoggable(Level.FINE)) {
+            LOGGER.fine("clean timeout profiling traceId: " + entry.getKey().getTraceID() + " startTime: "
+                    + entry.getKey().getProfilingStartTimeMillis());
+        }
 
         Iterator<Map.Entry<Long, ScopedContext>> iterator = entry.getValue().entrySet().iterator();
         while (iterator.hasNext()) {

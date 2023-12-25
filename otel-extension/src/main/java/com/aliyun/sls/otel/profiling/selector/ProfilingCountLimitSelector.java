@@ -3,6 +3,7 @@ package com.aliyun.sls.otel.profiling.selector;
 import io.opentelemetry.sdk.trace.ReadWriteSpan;
 
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
 
 /**
  * Profiling selector with count limit.
@@ -20,7 +21,9 @@ public class ProfilingCountLimitSelector extends AbstractProfilingSelector {
     public boolean shouldBeProfiling(ReadWriteSpan span) {
         // Check if need to profiling another thread of the same trace.
         if (checkIfAlreadyProfiling(span.getSpanContext().getTraceId())) {
-            LOGGER.info(span.getSpanContext().getTraceId() + " is already profiling, continue to profiling");
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine(span.getSpanContext().getTraceId() + " is already profiling, continue to profiling");
+            }
             profilingAction.startProfiling(span);
             return true;
         }
@@ -34,12 +37,16 @@ public class ProfilingCountLimitSelector extends AbstractProfilingSelector {
         }
 
         if (shouldBeProfiling && checkIfNeedProfiling(span)) {
-            LOGGER.info("start profiling, matched rule: " + this.getClass().getName());
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("start profiling, matched rule: " + this.getClass().getName());
+            }
             if (profilingAction != null) {
                 profilingAction.startProfiling(span);
                 return true;
             } else {
-                LOGGER.warning("profilingAction is null, skip profiling");
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.fine("profilingAction is null, skip profiling");
+                }
             }
         }
 
@@ -56,7 +63,9 @@ public class ProfilingCountLimitSelector extends AbstractProfilingSelector {
                 lock.unlock();
             }
         } else {
-            LOGGER.info("profiling count is out of limit, skip profiling");
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("profiling count is out of limit, skip profiling");
+            }
         }
 
         return false;

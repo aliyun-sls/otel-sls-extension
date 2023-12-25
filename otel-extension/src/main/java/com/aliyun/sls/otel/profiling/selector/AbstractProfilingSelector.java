@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -49,12 +50,16 @@ public abstract class AbstractProfilingSelector implements ProfilingSelector {
      */
     public boolean shouldBeProfiling(ReadWriteSpan span) {
         if (checkIfNeedProfiling(span)) {
-            LOGGER.info("start profiling, matched rule: " + this.getClass().getName());
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("start profiling, matched rule: " + this.getClass().getName());
+            }
             if (profilingAction != null) {
                 profilingAction.startProfiling(span);
                 return true;
             } else {
-                LOGGER.warning("profilingAction is null, skip profiling");
+                if (LOGGER.isLoggable(Level.FINE)) {
+                    LOGGER.fine("profilingAction is null, skip profiling");
+                }
             }
         }
 

@@ -7,8 +7,6 @@ import com.aliyun.sls.otel.profiling.selector.ProfilingKey;
 import io.opentelemetry.sdk.trace.ReadWriteSpan;
 import io.opentelemetry.sdk.trace.ReadableSpan;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,18 +28,6 @@ public enum AlibabaProfilingAction implements ProfilingAction {
     protected static final Logger LOGGER = Logger.getLogger(AlibabaProfilingAction.class.getName());
     // <TraceID, <ThreadID, ScopeContext>>
     protected final Map<ProfilingKey, Map<Long, ScopedContext>> profilingTraces = new ConcurrentSkipListMap<>();
-    private String ip;
-
-    private String hostname;
-
-    AlibabaProfilingAction() {
-        try {
-            InetAddress inetAddress = InetAddress.getLocalHost();
-            hostname = inetAddress.getHostName();
-        } catch (UnknownHostException e) {
-            hostname = "";
-        }
-    }
 
     @Override
     public final void stopProfiling(ReadableSpan readableSpan) {
@@ -93,7 +79,6 @@ public enum AlibabaProfilingAction implements ProfilingAction {
         labels.put(LABEL_PROFILE_ID, span.getSpanContext().getSpanId());
         labels.put(LABEL_TRACE_ID, span.getSpanContext().getTraceId());
         labels.put(LABEL_SPAN_ID, span.getSpanContext().getSpanId());
-        labels.put(LABEL_HOSTNAME, INSTANCE.hostname);
 
         return labels;
     }

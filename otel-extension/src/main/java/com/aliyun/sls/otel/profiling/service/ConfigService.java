@@ -3,7 +3,9 @@ package com.aliyun.sls.otel.profiling.service;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +35,20 @@ public enum ConfigService implements ProfilingConfig {
     private volatile ScheduledFuture<?> scheduledFuture;
     private static final Logger LOGGER = Logger.getLogger(ConfigService.class.getName());
     private final LinkedBlockingDeque<ConfigChangedListener> configChangedListeners = new LinkedBlockingDeque<>();
+
+    private String ip;
+    private String hostname;
+
+    ConfigService() {
+        try {
+            InetAddress inetAddress = InetAddress.getLocalHost();
+            hostname = inetAddress.getHostName();
+            ip = inetAddress.getHostAddress();
+        } catch (UnknownHostException e) {
+            hostname = "";
+            ip = "";
+        }
+    }
 
     private ProfilingConfigs loadConfigFromClassPath(String fileName) throws IOException {
         InputStream configFile = ConfigService.class.getResourceAsStream(fileName);
@@ -162,6 +178,7 @@ public enum ConfigService implements ProfilingConfig {
         }
         agentConfig.put("profiling.agent.spy.name", "java");
         agentConfig.put("profiling.app.name", getServiceName());
+        agentConfig.put("profiling.app.labels", "hostname=" + hostname + ";ip=" + ip);
         return agentConfig;
     }
 

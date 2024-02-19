@@ -93,6 +93,7 @@ public enum ConfigService implements ProfilingConfig {
                 scheduledFuture = ScheduleTaskService.INSTANCE.submitJob(() -> {
                     try {
                         profilingConfigs = reloadConfig(configFile);
+                        profilingConfigs = profilingConfigs.overrideFromEnvAndSystemProperties();
                         notifyConfigChangedListeners();
                     } catch (Exception e) {
                         LOGGER.warning("reload config failed: " + e.getMessage());
@@ -104,6 +105,10 @@ public enum ConfigService implements ProfilingConfig {
             profilingConfigs = NoopProfilingConfigs.INSTANCE;
             LOGGER.info("get default config: " + profilingConfigs.isEnabled());
         }
+
+
+        // rewirte configuration object from environment variables and system properties
+        profilingConfigs = profilingConfigs.overrideFromEnvAndSystemProperties();
         notifyConfigChangedListeners();
     }
 

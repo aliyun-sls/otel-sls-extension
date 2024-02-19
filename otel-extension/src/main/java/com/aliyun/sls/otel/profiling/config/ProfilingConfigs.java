@@ -49,4 +49,32 @@ public class ProfilingConfigs {
     public void setAgentConfigs(Map<String, String> agentConfigs) {
         this.agentConfigs = agentConfigs;
     }
+
+    public ProfilingConfigs overrideFromEnvAndSystemProperties() {
+        // enable profiling
+        if (System.getenv("OTEL_PROFILING_ENABLED") != null) {
+            this.enabled = Boolean.parseBoolean(System.getenv("OTEL_PROFILING_ENABLED"));
+        }
+        if (System.getProperty("otel.profiling.enabled") != null) {
+            this.enabled = Boolean.parseBoolean(System.getProperty("otel.profiling.enabled"));
+        }
+
+        // max profiling count
+        if (System.getenv("OTEL_PROFILING_MAX_PROFILING_COUNT") != null) {
+            this.maxProfilingCount = Integer.parseInt(System.getenv("OTEL_PROFILING_MAX_PROFILING_COUNT"));
+        }
+        if (System.getProperty("otel.profiling.max.profiling.count") != null) {
+            this.maxProfilingCount = Integer.parseInt(System.getProperty("otel.profiling.max.profiling.count"));
+        }
+
+        // profiling interval millis
+        if (System.getenv("OTEL_PROFILING_INTERVAL_MILLIS") != null) {
+            this.profilingIntervalMillis = Integer.parseInt(System.getenv("OTEL_PROFILING_INTERVAL_MILLIS"));
+        }
+        if (System.getProperty("otel.profiling.interval.millis") != null) {
+            this.profilingIntervalMillis = Integer.parseInt(System.getProperty("otel.profiling.interval.millis"));
+        }
+
+        return this;
+    }
 }

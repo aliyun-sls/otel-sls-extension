@@ -5,12 +5,15 @@ import com.aliyun.sls.otel.profiling.config.ProfilingRule;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Selector factory
  */
 public enum SelectorFactory {
     INSTANCE;
+
+    private static final Logger LOGGER = Logger.getLogger(SelectorFactory.class.getName());
 
     /**
      * Build profiling selector
@@ -22,22 +25,24 @@ public enum SelectorFactory {
      */
     public ProfilingSelector buildProfilingSelector(ProfilingConfig profilingConfig) {
         ProfilingCountLimitSelector profilingCountLimitSelector = new ProfilingCountLimitSelector(
-                profilingConfig.getMaxProfilingCount());
+            profilingConfig.getMaxProfilingCount());
 
-        if (profilingConfig.getProfilingRules() != null) {
+        if (profilingConfig.getProfilingRules() != null && !profilingConfig.getProfilingRules().isEmpty()) {
             Map<String, ProfilingSelector> profilingSelectorMap = new HashMap<>();
             for (ProfilingRule profilingRule : profilingConfig.getProfilingRules()) {
                 profilingSelectorMap.put(profilingRule.getName(), generateSelector(profilingRule, profilingConfig));
             }
-            profilingCountLimitSelector
-                    .addProfilingSelector(profilingSelectorMap.values().toArray(new ProfilingSelector[0]));
+            profilingCountLimitSelector.addProfilingSelector(profilingSelectorMap.values().toArray(new ProfilingSelector[0]));
+        } else {
+            LOGGER.warning("No profiling rules, use default profiling selector");
+            profilingCountLimitSelector.addProfilingSelector(defaultProfilingSelector());
         }
 
         return profilingCountLimitSelector;
     }
 
     public ProfilingSelector defaultProfilingSelector() {
-        return null;
+        return new RootSpanSelector(1000);
     }
 
     /**

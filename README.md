@@ -41,7 +41,9 @@ ID将Profiling数据与Trace数据相关联，帮助开发者找到应用中的�
 ### 预备工作
 
 1. 创建全栈可观测实例。[参见文档](https://help.aliyun.com/zh/sls/user-guide/create-an-instance-1.html)
-2. 配置Profiling数据采集配置。[参见文档](https://help.aliyun.com/zh/sls/user-guide/access-the-java-program-performance-data-reported-by-the-pyroscope-sdk-or-javaagent)
+2.
+
+配置Profiling数据采集配置。[参见文档](https://help.aliyun.com/zh/sls/user-guide/access-the-java-program-performance-data-reported-by-the-pyroscope-sdk-or-javaagent)
 
 ### 启动应用程序
 
@@ -68,25 +70,25 @@ java -javaagent:/path/to/opentelemetry-javaagent-all.jar \
 
 以下是otel-sls-extension的配置项说明：
 
-| 配置项                       | 说明                                                         | 是否必填 | 默认值                   |
-|---------------------------|------------------------------------------------------------|------|-----------------------|
-| enabled                   | 是否开启Profiling                                              | 是    | false                 |
-| maxProfilingCount         | 最大Profiling并行任务数                                           | 否    | 10                    |
-| profilingIntervalMillis   | Profiling任务任务间隔                                            | 否    | 5000                  |
-| agentConfigs              | Profiling Agent配置                                          | 否    |                       |
-| agent.upload.server       | Profiling数据上报地址                                            | 否    | http://localhost:4040 |
-| agent.timeout             | Profiling数据上报超时时间 ，单位：s(秒)                                 | 否    | 10                    |
-| agent.ingest.max.tries    | Profiling数据上传重试次数                                          | 否    | 2                     |
-| agent.log.level           | Profiling Agent日志级别                                        | 否    | off                   |
-| agent.log.file            | Profiling Agent日志文件路径                                      | 否    |                       |
-| period                    | Profiling数据上传周期，单位: s(秒)                                   | 否    | 20                    |
-| cpu.engine                | CPU采集引擎，目前支持auto/async_profiler/jfr/off                    | 否    | off                   |
-| wallclock.engine          | WallClock采集引擎，目前支持auto/async_profiler/off                  | 否    | off                   |
-| alloc.engine              | Alloc采集引擎，目前支持auto/async_profiler/jfr/off                  | 否    | off                   |
-| profilingRules            | Profiling规则配置                                              | 否    |                       |
-| profilingRules.name       | Profiling规则名称                                              | 是    |                       |
-| profilingRules.type       | Profiling规则类型，目前支持ROOT_SPAN, AGENT_RESOURCE, SPAN_NAME三种类型 | 是    |                       |
-| profilingRules.attributes | Profiling规则属性，根据不同的规则类型，属性值也不同                             | 否    |                       |
+| 配置项                       | 环境变量名                              | 说明                                                         | 是否必填 | 默认值                   |
+|---------------------------|------------------------------------|------------------------------------------------------------|------|-----------------------|
+| enabled                   | OTEL_PROFILING_ENABLED             | 是否开启Profiling                                              | 是    | false                 |
+| maxProfilingCount         | OTEL_PROFILING_MAX_PROFILING_COUNT | 最大Profiling并行任务数                                           | 否    | 10                    |
+| profilingIntervalMillis   | OTEL_PROFILING_INTERVAL_MILLIS     | Profiling任务任务间隔                                            | 否    | 1000                  |
+| agentConfigs              | -                                  | Profiling Agent配置                                          | 否    |                       |
+| agent.upload.server       | PROFILING_AGENT_UPLOAD_SERVER      | Profiling数据上报地址                                            | 否    | http://localhost:4040 |
+| agent.timeout             | PROFILING_AGENT_TIMEOUT            | Profiling数据上报超时时间 ，单位：s(秒)                                 | 否    | 10                    |
+| agent.ingest.max.tries    | PROFILING_AGENT_INGEST_MAX_TRIES   | Profiling数据上传重试次数                                          | 否    | 2                     |
+| agent.log.level           | PROFILING_AGENT_LOG_LEVEL          | Profiling Agent日志级别                                        | 否    | off                   |
+| agent.log.file            | PROFILING_AGENT_LOG_FILE           | Profiling Agent日志文件路径                                      | 否    |                       |
+| period                    | PROFILING_PERIOD                   | Profiling数据上传周期，单位: s(秒)                                   | 否    | 20                    |
+| cpu.engine                | PROFILING_CPU_ENGINE               | CPU采集引擎，目前支持auto/async_profiler/jfr/off                    | 否    | off                   |
+| wallclock.engine          | PROFILING_WALLCLOCK_ENGINE         | <br/>WallClock采集引擎，目前支持auto/async_profiler/off             | 否    | off                   |
+| alloc.engine              | PROFILING_ALLOC_ENGINE             | <br/>Alloc采集引擎，目前支持auto/async_profiler/jfr/off             | 否    | off                   |
+| profilingRules            | -                                  | Profiling规则配置                                              | 否    |                       |
+| profilingRules.name       | -                                  | Profiling规则名称                                              | 是    |                       |
+| profilingRules.type       | -                                  | Profiling规则类型，目前支持ROOT_SPAN, AGENT_RESOURCE, SPAN_NAME三种类型 | 是    |                       |
+| profilingRules.attributes | -                                  | Profiling规则属性，根据不同的规则类型，属性值也不同                             | 否    |                       |
 
 ### 配置示例
 
@@ -95,7 +97,7 @@ java -javaagent:/path/to/opentelemetry-javaagent-all.jar \
 ```yaml
 enabled: true
 maxProfilingCount: 10
-profilingIntervalMillis: 5000
+profilingIntervalMillis: 1000
 agentConfigs:
   agent.upload.server: "http://localhost:4040"
   agent.timeout: 10
@@ -116,7 +118,7 @@ profilingRules:
 ```yaml
 enabled: true
 maxProfilingCount: 10
-profilingIntervalMillis: 5000
+profilingIntervalMillis: 1000
 agentConfigs:
   agent.upload.server: "http://localhost:4040"
   agent.timeout: 10
@@ -141,26 +143,26 @@ profilingRules:
 ```yaml
 enabled: true
 maxProfilingCount: 10
-profilingIntervalMillis: 5000
+profilingIntervalMillis: 1000
 agentConfigs:
-   agent.upload.server: "http://localhost:4040"
-   agent.timeout: 10
-   agent.ingest.max.tries: 2
-   agent.log.level: off
-   agent.log.file: ""
-   period: 20
-   cpu.engine: async_profiler
-   wallclock.engine: async_profiler
-   alloc.engine: async_profiler
+  agent.upload.server: "http://localhost:4040"
+  agent.timeout: 10
+  agent.ingest.max.tries: 2
+  agent.log.level: off
+  agent.log.file: ""
+  period: 20
+  cpu.engine: async_profiler
+  wallclock.engine: async_profiler
+  alloc.engine: async_profiler
 profilingRules:
-   - name: "profiling all spans with some resouce attribute"
-     type: AGENT_RESOURCE
-     attributes:
-        service.name: "payment" #例如，这里指定了service.name为payment的Span将会被采集
-   - name: "profiling with span name"
-     type: SPAN_NAME
-     attributes:
-        pattern: "Get*" # 支持正则表达式
+  - name: "profiling all spans with some resouce attribute"
+    type: AGENT_RESOURCE
+    attributes:
+      service.name: "payment" #例如，这里指定了service.name为payment的Span将会被采集
+  - name: "profiling with span name"
+    type: SPAN_NAME
+    attributes:
+      pattern: "Get*" # 支持正则表达式
 ```
 
 ## RoadMap

@@ -93,6 +93,7 @@ public enum ConfigService implements ProfilingConfig {
                 scheduledFuture = ScheduleTaskService.INSTANCE.submitJob(() -> {
                     try {
                         profilingConfigs = reloadConfig(configFile);
+                        profilingConfigs = profilingConfigs.overrideFromEnvAndSystemProperties();
                         notifyConfigChangedListeners();
                     } catch (Exception e) {
                         LOGGER.warning("reload config failed: " + e.getMessage());
@@ -104,6 +105,10 @@ public enum ConfigService implements ProfilingConfig {
             profilingConfigs = NoopProfilingConfigs.INSTANCE;
             LOGGER.info("get default config: " + profilingConfigs.isEnabled());
         }
+
+
+        // rewirte configuration object from environment variables and system properties
+        profilingConfigs = profilingConfigs.overrideFromEnvAndSystemProperties();
         notifyConfigChangedListeners();
     }
 
@@ -142,7 +147,7 @@ public enum ConfigService implements ProfilingConfig {
 
     @Override
     public int getMaxProfilingCount() {
-        return profilingConfigs.getMaxProfilingCount();
+        return Math.max(profilingConfigs.getMaxProfilingCount(), 0);
     }
 
     @Override
@@ -152,7 +157,7 @@ public enum ConfigService implements ProfilingConfig {
 
     @Override
     public long getProfilingIntervalMillis() {
-        return profilingConfigs.getProfilingIntervalMillis();
+        return Math.max(profilingConfigs.getProfilingIntervalMillis(), 1000);
     }
 
     @Override
@@ -162,7 +167,7 @@ public enum ConfigService implements ProfilingConfig {
 
     @Override
     public String getServiceName() {
-        return resourceAttribute.getOrDefault("service.name", "UnknownService:(Java)");
+        return resourceAttribute.getOrDefault("service.name", "UnknownService(Java)");
     }
 
     @Override

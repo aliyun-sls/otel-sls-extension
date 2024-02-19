@@ -42,7 +42,7 @@ public enum SelectorFactory {
     }
 
     public ProfilingSelector defaultProfilingSelector() {
-        return new RootSpanSelector(10000);
+        return new RootSpanSelector(1000);
     }
 
     /**

@@ -147,7 +147,7 @@ public enum ConfigService implements ProfilingConfig {
 
     @Override
     public int getMaxProfilingCount() {
-        return profilingConfigs.getMaxProfilingCount();
+        return Math.max(profilingConfigs.getMaxProfilingCount(), 0);
     }
 
     @Override
@@ -157,7 +157,7 @@ public enum ConfigService implements ProfilingConfig {
 
     @Override
     public long getProfilingIntervalMillis() {
-        return profilingConfigs.getProfilingIntervalMillis();
+        return Math.max(profilingConfigs.getProfilingIntervalMillis(), 1000);
     }
 
     @Override
@@ -167,7 +167,7 @@ public enum ConfigService implements ProfilingConfig {
 
     @Override
     public String getServiceName() {
-        return resourceAttribute.getOrDefault("service.name", "UnknownService:(Java)");
+        return resourceAttribute.getOrDefault("service.name", "UnknownService(Java)");
     }
 
     @Override

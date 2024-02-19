@@ -72,7 +72,7 @@ java -javaagent:/path/to/opentelemetry-javaagent-all.jar \
 |---------------------------|------------------------------------------------------------|------|-----------------------|
 | enabled                   | 是否开启Profiling                                              | 是    | false                 |
 | maxProfilingCount         | 最大Profiling并行任务数                                           | 否    | 10                    |
-| profilingIntervalMillis   | Profiling任务任务间隔                                            | 否    | 5000                  |
+| profilingIntervalMillis   | Profiling任务任务间隔                                            | 否    | 1000                  |
 | agentConfigs              | Profiling Agent配置                                          | 否    |                       |
 | agent.upload.server       | Profiling数据上报地址                                            | 否    | http://localhost:4040 |
 | agent.timeout             | Profiling数据上报超时时间 ，单位：s(秒)                                 | 否    | 10                    |
@@ -95,7 +95,7 @@ java -javaagent:/path/to/opentelemetry-javaagent-all.jar \
 ```yaml
 enabled: true
 maxProfilingCount: 10
-profilingIntervalMillis: 5000
+profilingIntervalMillis: 1000
 agentConfigs:
   agent.upload.server: "http://localhost:4040"
   agent.timeout: 10
@@ -116,7 +116,7 @@ profilingRules:
 ```yaml
 enabled: true
 maxProfilingCount: 10
-profilingIntervalMillis: 5000
+profilingIntervalMillis: 1000
 agentConfigs:
   agent.upload.server: "http://localhost:4040"
   agent.timeout: 10
@@ -141,7 +141,7 @@ profilingRules:
 ```yaml
 enabled: true
 maxProfilingCount: 10
-profilingIntervalMillis: 5000
+profilingIntervalMillis: 1000
 agentConfigs:
    agent.upload.server: "http://localhost:4040"
    agent.timeout: 10

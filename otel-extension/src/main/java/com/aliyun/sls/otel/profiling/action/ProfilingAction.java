@@ -1,9 +1,8 @@
 package com.aliyun.sls.otel.profiling.action;
 
+import io.opentelemetry.context.Context;
 import io.opentelemetry.sdk.trace.ReadWriteSpan;
 import io.opentelemetry.sdk.trace.ReadableSpan;
-
-import static com.aliyun.sls.otel.profiling.selector.ProfilingKey.newKey;
 
 /**
  * ProfilingAction is the interface for profiling action.
@@ -41,11 +40,13 @@ public interface ProfilingAction {
     /**
      * check if the traceId is already profiling.
      *
+     * @param context
+     *
      * @param traceId
      *
      * @return
      */
-    boolean checkIfAlreadyProfiling(String traceId);
+    boolean checkIfAlreadyProfiling(Context context, String traceId);
 
     /**
      * clean timeout profiling trace.

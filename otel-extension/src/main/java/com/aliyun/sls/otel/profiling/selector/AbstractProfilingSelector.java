@@ -4,6 +4,8 @@ import com.aliyun.sls.otel.profiling.action.AlibabaProfilingAction;
 import com.aliyun.sls.otel.profiling.action.ProfilingAction;
 import com.aliyun.sls.otel.profiling.service.ProfilingService;
 import com.aliyun.sls.otel.profiling.service.ScheduleTaskService;
+
+import io.opentelemetry.context.Context;
 import io.opentelemetry.sdk.trace.ReadWriteSpan;
 import io.opentelemetry.sdk.trace.ReadableSpan;
 
@@ -37,18 +39,20 @@ public abstract class AbstractProfilingSelector implements ProfilingSelector {
     /**
      * check if already profiling
      *
+     * @param context
+     *
      * @param traceId
      *
      * @return
      */
-    protected boolean checkIfAlreadyProfiling(String traceId) {
-        return profilingAction.checkIfAlreadyProfiling(traceId);
+    protected boolean checkIfAlreadyProfiling(Context context, String traceId) {
+        return profilingAction.checkIfAlreadyProfiling(context, traceId);
     }
 
     /**
      * check if need profiling, if need, start profiling
      */
-    public boolean shouldBeProfiling(ReadWriteSpan span) {
+    public boolean shouldBeProfiling(Context context, ReadWriteSpan span) {
         if (checkIfNeedProfiling(span)) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.fine("start profiling, matched rule: " + this.getClass().getName());
@@ -68,7 +72,7 @@ public abstract class AbstractProfilingSelector implements ProfilingSelector {
         }
 
         for (ProfilingSelector profilingSelector : profilingSelectors) {
-            if (profilingSelector.shouldBeProfiling(span)) {
+            if (profilingSelector.shouldBeProfiling(context, span)) {
                 return true;
             }
         }

@@ -5,6 +5,8 @@ import com.aliyun.sls.otel.profiling.config.ConfigChangedListener;
 import com.aliyun.sls.otel.profiling.config.ProfilingConfig;
 import com.aliyun.sls.otel.profiling.selector.ProfilingSelector;
 import com.aliyun.sls.otel.profiling.selector.SelectorFactory;
+
+import io.opentelemetry.context.Context;
 import io.opentelemetry.sdk.trace.ReadWriteSpan;
 import io.opentelemetry.sdk.trace.ReadableSpan;
 
@@ -26,12 +28,12 @@ public enum ProfilingService implements ConfigChangedListener {
         ConfigService.INSTANCE.registryListener(this);
     }
 
-    public boolean tryToProfiling(ReadWriteSpan readWriteSpan) {
+    public boolean tryToProfiling(Context context, ReadWriteSpan readWriteSpan) {
         if (!enableProfiling || this.profilingSelector.get() == null) {
             return false;
         }
 
-        return this.profilingSelector.get().shouldBeProfiling(readWriteSpan);
+        return this.profilingSelector.get().shouldBeProfiling(context, readWriteSpan);
     }
 
     public void stopProfiling(ReadableSpan span) {

@@ -1,5 +1,6 @@
 package com.aliyun.sls.otel.profiling.selector;
 
+import io.opentelemetry.context.Context;
 import io.opentelemetry.sdk.trace.ReadWriteSpan;
 
 import java.util.concurrent.locks.ReentrantLock;
@@ -18,9 +19,9 @@ public class ProfilingCountLimitSelector extends AbstractProfilingSelector {
     }
 
     @Override
-    public boolean shouldBeProfiling(ReadWriteSpan span) {
+    public boolean shouldBeProfiling(Context context, ReadWriteSpan span) {
         // Check if need to profiling another thread of the same trace.
-        if (checkIfAlreadyProfiling(span.getSpanContext().getTraceId())) {
+        if (checkIfAlreadyProfiling(context, span.getSpanContext().getTraceId())) {
             if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.fine(span.getSpanContext().getTraceId() + " is already profiling, continue to profiling");
             }
@@ -30,7 +31,7 @@ public class ProfilingCountLimitSelector extends AbstractProfilingSelector {
 
         boolean shouldBeProfiling = profilingSelectors.isEmpty() ? true : false;
         for (ProfilingSelector profilingSelector : profilingSelectors) {
-            if (profilingSelector.shouldBeProfiling(span)) {
+            if (profilingSelector.shouldBeProfiling(context, span)) {
                 shouldBeProfiling = true;
                 break;
             }

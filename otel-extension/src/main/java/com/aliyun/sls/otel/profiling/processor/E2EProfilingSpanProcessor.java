@@ -23,7 +23,7 @@ public class E2EProfilingSpanProcessor implements SpanProcessor {
 
     @Override
     public void onStart(Context context, ReadWriteSpan readWriteSpan) {
-        if (profilingService.tryToProfiling(readWriteSpan)) {
+        if (profilingService.tryToProfiling(context, readWriteSpan)) {
             readWriteSpan.setAttribute(PROFILING_ATTRIBUTE, "true");
         }
     }

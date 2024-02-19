@@ -3,7 +3,10 @@ package com.aliyun.sls.otel.profiling.action;
 import com.alibaba.cpc.asyncprofiler.labels.LabelsSet;
 import com.alibaba.cpc.asyncprofiler.labels.ScopedContext;
 import com.alibaba.cpc.tracing.TracingProfiling;
+import com.aliyun.sls.otel.profiling.config.Constants;
 import com.aliyun.sls.otel.profiling.selector.ProfilingKey;
+
+import io.opentelemetry.context.Context;
 import io.opentelemetry.sdk.trace.ReadWriteSpan;
 import io.opentelemetry.sdk.trace.ReadableSpan;
 
@@ -96,7 +99,12 @@ public enum AlibabaProfilingAction implements ProfilingAction {
     }
 
     @Override
-    public boolean checkIfAlreadyProfiling(String traceId) {
+    public boolean checkIfAlreadyProfiling(Context context, String traceId) {
+        Boolean profilingFlag = context.get(Constants.PROFILING_FLAG);
+        if (profilingFlag != null && profilingFlag) {
+            return true;
+        }
+
         return profilingTraces.containsKey(newKey(traceId));
     }
 

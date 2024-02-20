@@ -93,7 +93,6 @@ public enum ConfigService implements ProfilingConfig {
                 scheduledFuture = ScheduleTaskService.INSTANCE.submitJob(() -> {
                     try {
                         profilingConfigs = reloadConfig(configFile);
-                        profilingConfigs = profilingConfigs.overrideFromEnvAndSystemProperties();
                         notifyConfigChangedListeners();
                     } catch (Exception e) {
                         LOGGER.warning("reload config failed: " + e.getMessage());
@@ -105,10 +104,6 @@ public enum ConfigService implements ProfilingConfig {
             profilingConfigs = NoopProfilingConfigs.INSTANCE;
             LOGGER.info("get default config: " + profilingConfigs.isEnabled());
         }
-
-
-        // rewirte configuration object from environment variables and system properties
-        profilingConfigs = profilingConfigs.overrideFromEnvAndSystemProperties();
         notifyConfigChangedListeners();
     }
 
@@ -147,7 +142,7 @@ public enum ConfigService implements ProfilingConfig {
 
     @Override
     public int getMaxProfilingCount() {
-        return Math.max(profilingConfigs.getMaxProfilingCount(), 0);
+        return profilingConfigs.getMaxProfilingCount();
     }
 
     @Override
@@ -157,7 +152,7 @@ public enum ConfigService implements ProfilingConfig {
 
     @Override
     public long getProfilingIntervalMillis() {
-        return Math.max(profilingConfigs.getProfilingIntervalMillis(), 1000);
+        return profilingConfigs.getProfilingIntervalMillis();
     }
 
     @Override
@@ -167,7 +162,7 @@ public enum ConfigService implements ProfilingConfig {
 
     @Override
     public String getServiceName() {
-        return resourceAttribute.getOrDefault("service.name", "UnknownService(Java)");
+        return resourceAttribute.getOrDefault("service.name", "UnknownService:(Java)");
     }
 
     @Override
@@ -181,9 +176,21 @@ public enum ConfigService implements ProfilingConfig {
         for (Map.Entry<String, String> entry : profilingConfigs.getAgentConfigs().entrySet()) {
             agentConfig.put(String.format("profiling.%s", entry.getKey()), entry.getValue());
         }
+
+        // set default upload server
+        if (!profilingConfigs.getAgentConfigs().containsKey("agent.upload.server")) {
+            agentConfig.put("profiling.agent.upload.server", "http://logtail-statefulset.kube-system:4040");
+        }
+
         agentConfig.put("profiling.agent.spy.name", "java");
         agentConfig.put("profiling.app.name", getServiceName());
         agentConfig.put("profiling.app.labels", "hostname=" + hostname + ";ip=" + ip);
+
+        // set default profiling engine
+        agentConfig.put("profiling.cpu.engine", "auto");
+        agentConfig.put("profiling.wallclock.engine", "auto");
+        agentConfig.put("profiling.alloc.engine", "auto");
+
         return agentConfig;
     }
 

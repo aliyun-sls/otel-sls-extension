@@ -25,14 +25,15 @@ public enum SelectorFactory {
      */
     public ProfilingSelector buildProfilingSelector(ProfilingConfig profilingConfig) {
         ProfilingCountLimitSelector profilingCountLimitSelector = new ProfilingCountLimitSelector(
-            profilingConfig.getMaxProfilingCount());
+                profilingConfig.getMaxProfilingCount());
 
         if (profilingConfig.getProfilingRules() != null && !profilingConfig.getProfilingRules().isEmpty()) {
             Map<String, ProfilingSelector> profilingSelectorMap = new HashMap<>();
             for (ProfilingRule profilingRule : profilingConfig.getProfilingRules()) {
                 profilingSelectorMap.put(profilingRule.getName(), generateSelector(profilingRule, profilingConfig));
             }
-            profilingCountLimitSelector.addProfilingSelector(profilingSelectorMap.values().toArray(new ProfilingSelector[0]));
+            profilingCountLimitSelector
+                    .addProfilingSelector(profilingSelectorMap.values().toArray(new ProfilingSelector[0]));
         } else {
             LOGGER.warning("No profiling rules, use default profiling selector");
             profilingCountLimitSelector.addProfilingSelector(defaultProfilingSelector());

@@ -76,15 +76,15 @@ java -javaagent:/path/to/opentelemetry-javaagent-all.jar \
 | maxProfilingCount         | OTEL_PROFILING_MAX_PROFILING_COUNT | 最大Profiling并行任务数                                           | 否    | 10                    |
 | profilingIntervalMillis   | OTEL_PROFILING_INTERVAL_MILLIS     | Profiling任务任务间隔                                            | 否    | 1000                  |
 | agentConfigs              | -                                  | Profiling Agent配置                                          | 否    |                       |
-| agent.upload.server       | PROFILING_AGENT_UPLOAD_SERVER      | Profiling数据上报地址                                            | 否    | http://localhost:4040 |
+| agent.upload.server       | PROFILING_AGENT_UPLOAD_SERVER      | Profiling数据上报地址                                            | 否    | http://logtail-statefulset.kube-system:4040 |
 | agent.timeout             | PROFILING_AGENT_TIMEOUT            | Profiling数据上报超时时间 ，单位：s(秒)                                 | 否    | 10                    |
 | agent.ingest.max.tries    | PROFILING_AGENT_INGEST_MAX_TRIES   | Profiling数据上传重试次数                                          | 否    | 2                     |
 | agent.log.level           | PROFILING_AGENT_LOG_LEVEL          | Profiling Agent日志级别                                        | 否    | off                   |
 | agent.log.file            | PROFILING_AGENT_LOG_FILE           | Profiling Agent日志文件路径                                      | 否    |                       |
 | period                    | PROFILING_PERIOD                   | Profiling数据上传周期，单位: s(秒)                                   | 否    | 20                    |
-| cpu.engine                | PROFILING_CPU_ENGINE               | CPU采集引擎，目前支持auto/async_profiler/jfr/off                    | 否    | off                   |
-| wallclock.engine          | PROFILING_WALLCLOCK_ENGINE         | <br/>WallClock采集引擎，目前支持auto/async_profiler/off             | 否    | off                   |
-| alloc.engine              | PROFILING_ALLOC_ENGINE             | <br/>Alloc采集引擎，目前支持auto/async_profiler/jfr/off             | 否    | off                   |
+| cpu.engine                | PROFILING_CPU_ENGINE               | CPU采集引擎，目前支持auto/async_profiler/jfr/off                    | 否    | auto                  |
+| wallclock.engine          | PROFILING_WALLCLOCK_ENGINE         | <br/>WallClock采集引擎，目前支持auto/async_profiler/off    <br/>         | 否    | auto                  |
+| alloc.engine              | PROFILING_ALLOC_ENGINE             | <br/>Alloc采集引擎，目前支持auto/async_profiler/jfr/off             | 否    | auto                  |
 | profilingRules            | -                                  | Profiling规则配置                                              | 否    |                       |
 | profilingRules.name       | -                                  | Profiling规则名称                                              | 是    |                       |
 | profilingRules.type       | -                                  | Profiling规则类型，目前支持ROOT_SPAN, AGENT_RESOURCE, SPAN_NAME三种类型 | 是    |                       |

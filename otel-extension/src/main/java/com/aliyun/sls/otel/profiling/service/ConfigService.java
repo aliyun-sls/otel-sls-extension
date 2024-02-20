@@ -1,5 +1,12 @@
 package com.aliyun.sls.otel.profiling.service;
 
+import com.aliyun.sls.otel.profiling.config.*;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import io.opentelemetry.sdk.autoconfigure.spi.ConfigProperties;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,18 +20,6 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
-
-import com.aliyun.sls.otel.profiling.config.ConfigChangedListener;
-import com.aliyun.sls.otel.profiling.config.NoopProfilingConfigs;
-import com.aliyun.sls.otel.profiling.config.ProfilingConfig;
-import com.aliyun.sls.otel.profiling.config.ProfilingConfigs;
-import com.aliyun.sls.otel.profiling.config.ProfilingRule;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-
-import io.opentelemetry.sdk.autoconfigure.spi.ConfigProperties;
 
 public enum ConfigService implements ProfilingConfig {
 
@@ -190,9 +185,20 @@ public enum ConfigService implements ProfilingConfig {
         agentConfig.put("profiling.app.labels", "hostname=" + hostname + ";ip=" + ip);
 
         // set default profiling engine
-        agentConfig.put("profiling.cpu.engine", "auto");
-        agentConfig.put("profiling.wallclock.engine", "auto");
-        agentConfig.put("profiling.alloc.engine", "auto");
+        if (!profilingConfigs.getAgentConfigs().containsKey("cpu.engine")) {
+            LOGGER.info("set default cpu profiling engine: async_profiler");
+            agentConfig.put("profiling.cpu.engine", "async_profiler");
+        }
+
+        if (!profilingConfigs.getAgentConfigs().containsKey("wallclock.engine")) {
+            LOGGER.info("set default wallclock profiling engine: async_profiler");
+            agentConfig.put("profiling.wallclock.engine", "async_profiler");
+        }
+
+        if (!profilingConfigs.getAgentConfigs().containsKey("alloc.engine")) {
+            LOGGER.info("set default alloc profiling engine: async_profiler");
+            agentConfig.put("profiling.alloc.engine", "async_profiler");
+        }
 
         return agentConfig;
     }

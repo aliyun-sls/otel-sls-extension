@@ -44,4 +44,4 @@ public interface ProfilingAction {
      * @return
      */
     boolean checkIfAlreadyProfiling(String traceId);
-  }
+}

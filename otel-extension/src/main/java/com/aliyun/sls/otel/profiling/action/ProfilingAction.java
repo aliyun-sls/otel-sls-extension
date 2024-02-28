@@ -3,8 +3,6 @@ package com.aliyun.sls.otel.profiling.action;
 import io.opentelemetry.sdk.trace.ReadWriteSpan;
 import io.opentelemetry.sdk.trace.ReadableSpan;
 
-import static com.aliyun.sls.otel.profiling.selector.ProfilingKey.newKey;
-
 /**
  * ProfilingAction is the interface for profiling action.
  */
@@ -46,11 +44,4 @@ public interface ProfilingAction {
      * @return
      */
     boolean checkIfAlreadyProfiling(String traceId);
-
-    /**
-     * clean timeout profiling trace.
-     *
-     * @param timeout
-     */
-    void cleanTimeoutProfilingTrace(long timeout);
-}
+  }

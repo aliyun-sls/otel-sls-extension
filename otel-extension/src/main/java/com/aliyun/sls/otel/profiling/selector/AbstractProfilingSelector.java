@@ -1,18 +1,17 @@
 package com.aliyun.sls.otel.profiling.selector;
 
-import com.aliyun.sls.otel.profiling.action.AlibabaProfilingAction;
-import com.aliyun.sls.otel.profiling.action.ProfilingAction;
-import com.aliyun.sls.otel.profiling.service.ProfilingService;
-import com.aliyun.sls.otel.profiling.service.ScheduleTaskService;
-import io.opentelemetry.sdk.trace.ReadWriteSpan;
-import io.opentelemetry.sdk.trace.ReadableSpan;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.aliyun.sls.otel.profiling.action.AlibabaProfilingAction;
+import com.aliyun.sls.otel.profiling.action.ProfilingAction;
+import com.aliyun.sls.otel.profiling.service.ProfilingService;
+
+import io.opentelemetry.sdk.trace.ReadWriteSpan;
+import io.opentelemetry.sdk.trace.ReadableSpan;
 
 /**
  * AbstractProfilingSelector is the abstract class for profiling selector, it provides the profiling selector.
@@ -25,9 +24,6 @@ public abstract class AbstractProfilingSelector implements ProfilingSelector {
 
     protected AbstractProfilingSelector(ProfilingAction profilingAction) {
         this.profilingAction = profilingAction;
-        ScheduleTaskService.INSTANCE.submitJob(
-                () -> profilingAction.cleanTimeoutProfilingTrace(TimeUnit.MINUTES.toMillis(2)), 2, 2,
-                java.util.concurrent.TimeUnit.MINUTES);
     }
 
     public AbstractProfilingSelector() {

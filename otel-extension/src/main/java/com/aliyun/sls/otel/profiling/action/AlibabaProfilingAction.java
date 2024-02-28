@@ -1,23 +1,25 @@
 package com.aliyun.sls.otel.profiling.action;
 
-import com.alibaba.cpc.asyncprofiler.labels.LabelsSet;
-import com.alibaba.cpc.asyncprofiler.labels.ScopedContext;
-import com.alibaba.cpc.tracing.TracingProfiling;
-import com.aliyun.sls.otel.profiling.selector.ProfilingKey;
-import io.opentelemetry.sdk.trace.ReadWriteSpan;
-import io.opentelemetry.sdk.trace.ReadableSpan;
+import static com.aliyun.sls.otel.profiling.constant.Constants.LABEL_PROFILE_ID;
+import static com.aliyun.sls.otel.profiling.constant.Constants.LABEL_SPAN_ID;
+import static com.aliyun.sls.otel.profiling.constant.Constants.LABEL_TRACE_ID;
+import static com.aliyun.sls.otel.profiling.selector.ProfilingKey.newKey;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.aliyun.sls.otel.profiling.constant.Constants.*;
-import static com.aliyun.sls.otel.profiling.selector.ProfilingKey.newKey;
+import com.alibaba.cpc.asyncprofiler.labels.LabelsSet;
+import com.alibaba.cpc.asyncprofiler.labels.ScopedContext;
+import com.alibaba.cpc.tracing.TracingProfiling;
+import com.aliyun.sls.otel.profiling.selector.ProfilingKey;
+
+import io.opentelemetry.sdk.trace.ReadWriteSpan;
+import io.opentelemetry.sdk.trace.ReadableSpan;
 
 /**
  * AlibabaProfilingAction is the implementation of ProfilingAction, it provides the profiling action.
@@ -98,32 +100,6 @@ public enum AlibabaProfilingAction implements ProfilingAction {
     @Override
     public boolean checkIfAlreadyProfiling(String traceId) {
         return profilingTraces.containsKey(newKey(traceId));
-    }
-
-    @Override
-    public void cleanTimeoutProfilingTrace(long timeout) {
-        Iterator<Map.Entry<ProfilingKey, Map<Long, ScopedContext>>> iterator = profilingTraces.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<ProfilingKey, Map<Long, ScopedContext>> entry = iterator.next();
-            if (System.currentTimeMillis() - entry.getKey().getProfilingStartTimeMillis() > timeout) {
-                cleanProfilingTrace(entry);
-                continue;
-            }
-        }
-    }
-
-    private void cleanProfilingTrace(Map.Entry<ProfilingKey, Map<Long, ScopedContext>> entry) {
-        if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine("clean timeout profiling traceId: " + entry.getKey().getTraceID() + " startTime: "
-                    + entry.getKey().getProfilingStartTimeMillis());
-        }
-
-        Iterator<Map.Entry<Long, ScopedContext>> iterator = entry.getValue().entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<Long, ScopedContext> contextEntry = iterator.next();
-            stopProfiling(entry.getKey().getTraceID(), contextEntry.getKey());
-            iterator.remove();
-        }
     }
 
 }
